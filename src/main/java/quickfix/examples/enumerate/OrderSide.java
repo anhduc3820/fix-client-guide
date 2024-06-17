@@ -17,26 +17,23 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai;
+package quickfix.examples.enumerate;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class OrderTIF {
-    static private final Map<String, OrderTIF> known = new HashMap<>();
-    static public final OrderTIF DAY = new OrderTIF("Day");
-    static public final OrderTIF IOC = new OrderTIF("IOC");
-    static public final OrderTIF OPG = new OrderTIF("OPG");
-    static public final OrderTIF GTC = new OrderTIF("GTC");
-    static public final OrderTIF GTX = new OrderTIF("GTX");
+public class OrderSide {
+    static private final Map<String, OrderSide> known = new HashMap<>();
+    static public final OrderSide BUY = new OrderSide("Buy");
+    static public final OrderSide SELL = new OrderSide("Sell");
 
-    static private final OrderTIF[] array = { DAY, IOC, OPG, GTC, GTX };
+    static private final OrderSide[] array = {BUY, SELL};
 
     private final String name;
 
-    private OrderTIF(String name) {
+    private OrderSide(String name) {
         this.name = name;
-        synchronized (OrderTIF.class) {
+        synchronized (OrderSide.class) {
             known.put(name, this);
         }
     }
@@ -53,11 +50,11 @@ public class OrderTIF {
         return array;
     }
 
-    public static OrderTIF parse(String type) throws IllegalArgumentException {
-        OrderTIF result = known.get(type);
+    public static OrderSide parse(String type) throws IllegalArgumentException {
+        OrderSide result = known.get(type);
         if (result == null) {
             throw new IllegalArgumentException
-            ("OrderTIF: " + type + " is unknown.");
+            ("OrderSide: " + type + " is unknown.");
         }
         return result;
     }

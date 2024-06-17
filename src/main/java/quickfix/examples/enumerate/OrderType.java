@@ -17,31 +17,24 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai;
+package quickfix.examples.enumerate;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class OrderSide {
-    static private final Map<String, OrderSide> known = new HashMap<>();
-    static public final OrderSide BUY = new OrderSide("Buy");
-    static public final OrderSide SELL = new OrderSide("Sell");
-    static public final OrderSide SHORT_SELL = new OrderSide("Short Sell");
-    static public final OrderSide SHORT_SELL_EXEMPT = new OrderSide("Short Sell Exempt");
-    static public final OrderSide CROSS = new OrderSide("Cross");
-    static public final OrderSide CROSS_SHORT = new OrderSide("Cross Short");
-    static public final OrderSide CROSS_SHORT_EXEMPT = new OrderSide("Cross Short Exempt");
+public class OrderType {
 
-    static private final OrderSide[] array = {
-            BUY, SELL, SHORT_SELL, SHORT_SELL_EXEMPT,
-            CROSS, CROSS_SHORT, CROSS_SHORT_EXEMPT
-    };
+    static private final Map<String, OrderType> known = new HashMap<>();
+
+    static public final OrderType LIMIT = new OrderType("Limit");
 
     private final String name;
 
-    private OrderSide(String name) {
+    static private final OrderType[] array = { LIMIT };
+
+    private OrderType(String name) {
         this.name = name;
-        synchronized (OrderSide.class) {
+        synchronized (OrderType.class) {
             known.put(name, this);
         }
     }
@@ -58,11 +51,11 @@ public class OrderSide {
         return array;
     }
 
-    public static OrderSide parse(String type) throws IllegalArgumentException {
-        OrderSide result = known.get(type);
+    public static OrderType parse(String type) throws IllegalArgumentException {
+        OrderType result = known.get(type);
         if (result == null) {
             throw new IllegalArgumentException
-            ("OrderSide: " + type + " is unknown.");
+            ("OrderType: " + type + " is unknown.");
         }
         return result;
     }

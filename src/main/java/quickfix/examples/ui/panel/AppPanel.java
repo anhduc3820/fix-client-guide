@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai.ui;
+package quickfix.examples.ui.panel;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,25 +34,29 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import quickfix.examples.banzai.BanzaiApplication;
-import quickfix.examples.banzai.ExecutionTableModel;
-import quickfix.examples.banzai.Order;
-import quickfix.examples.banzai.OrderTableModel;
+import quickfix.examples.app.ApplicationRunner;
+import quickfix.examples.model.ObservableOrder;
+import quickfix.examples.model.table.ExecutionTableModel;
+import quickfix.examples.model.Order;
+import quickfix.examples.model.table.OrderTableModel;
+import quickfix.examples.service.RoutingService;
 
 /**
  * Main content panel
  */
-public class BanzaiPanel extends JPanel implements Observer, ActionListener {
+public class AppPanel extends JPanel implements Observer, ActionListener {
 
     private final OrderEntryPanel orderEntryPanel;
     private final OrderPanel orderPanel;
     private final CancelReplacePanel cancelReplacePanel;
     private final OrderTableModel orderTableModel;
 
-    public BanzaiPanel(OrderTableModel orderTableModel,
-                ExecutionTableModel executionTableModel,
-                BanzaiApplication application) {
-        setName("BanzaiPanel");
+    public AppPanel(OrderTableModel orderTableModel,
+                    ExecutionTableModel executionTableModel,
+                    ApplicationRunner applicationRunner,
+                    ObservableOrder observableOrder,
+                    RoutingService routingService) {
+        setName("AppPanel");
         this.orderTableModel = orderTableModel;
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -61,7 +65,7 @@ public class BanzaiPanel extends JPanel implements Observer, ActionListener {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1;
 
-        orderEntryPanel = new OrderEntryPanel(orderTableModel, application);
+        orderEntryPanel = new OrderEntryPanel(orderTableModel, applicationRunner, routingService);
         constraints.insets = new Insets(0, 0, 5, 0);
         add(orderEntryPanel, constraints);
 
@@ -69,14 +73,14 @@ public class BanzaiPanel extends JPanel implements Observer, ActionListener {
         constraints.weighty = 10;
 
         JTabbedPane tabbedPane = new JTabbedPane();
-        orderPanel = new OrderPanel(orderTableModel, application);
+        orderPanel = new OrderPanel(orderTableModel, routingService);
         ExecutionPanel executionPanel = new ExecutionPanel(executionTableModel);
 
         tabbedPane.add("Orders", orderPanel);
         tabbedPane.add("Executions", executionPanel);
         add(tabbedPane, constraints);
 
-        cancelReplacePanel = new CancelReplacePanel(application);
+        cancelReplacePanel = new CancelReplacePanel(routingService);
         constraints.weighty = 0;
         add(cancelReplacePanel, constraints);
         cancelReplacePanel.setEnabled(false);
@@ -84,7 +88,8 @@ public class BanzaiPanel extends JPanel implements Observer, ActionListener {
         orderEntryPanel.addActionListener(this);
         orderPanel.orderTable().getSelectionModel().addListSelectionListener(new OrderSelection());
         cancelReplacePanel.addActionListener(this);
-        application.addOrderObserver(this);
+
+        observableOrder.addOrderObserver(this);
     }
 
     public void update(Observable o, Object arg) {

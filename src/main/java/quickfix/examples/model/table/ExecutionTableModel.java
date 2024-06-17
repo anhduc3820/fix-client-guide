@@ -17,7 +17,9 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai;
+package quickfix.examples.model.table;
+
+import quickfix.examples.model.Execution;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.HashMap;

@@ -17,33 +17,29 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai.ui;
+package quickfix.examples.ui.table;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Color;
+import java.awt.Component;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
-import quickfix.examples.banzai.ExecutionTableModel;
+import quickfix.examples.model.table.ExecutionTableModel;
 
-/**
- * Contains the executions panel
- */
-public class ExecutionPanel extends JPanel {
-
-    public ExecutionPanel(ExecutionTableModel executionTableModel) {
-        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-
-        JTable table = new ExecutionTable(executionTableModel);
-        add(new JScrollPane(table), constraints);
+public class ExecutionTable extends JTable {
+    public ExecutionTable(ExecutionTableModel executionTableModel) {
+        super(executionTableModel);
     }
 
+    public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+        //Execution execution = (Execution) ((ExecutionTableModel) dataModel).getExecution(row);
+
+        DefaultTableCellRenderer r = (DefaultTableCellRenderer) renderer;
+        r.setForeground(Color.black);
+        r.setBackground(row % 2 == 0 ? Color.white : Color.lightGray);
+
+        return super.prepareRenderer(renderer, row, column);
+    }
 }

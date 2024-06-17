@@ -17,8 +17,11 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai;
+package quickfix.examples.model;
 
+import quickfix.examples.enumerate.OrderSide;
+import quickfix.examples.enumerate.OrderTIF;
+import quickfix.examples.enumerate.OrderType;
 import quickfix.SessionID;
 
 public class Order implements Cloneable {
@@ -28,10 +31,9 @@ public class Order implements Cloneable {
     private int open = 0;
     private double executed = 0;
     private OrderSide side = OrderSide.BUY;
-    private OrderType type = OrderType.MARKET;
+    private OrderType type = OrderType.LIMIT;
     private OrderTIF tif = OrderTIF.DAY;
     private Double limit = null;
-    private Double stop = null;
     private double avgPx = 0.0;
     private boolean rejected = false;
     private boolean canceled = false;
@@ -138,22 +140,6 @@ public class Order implements Cloneable {
             this.limit = null;
         } else {
             this.limit = Double.parseDouble(limit);
-        }
-    }
-
-    public Double getStop() {
-        return stop;
-    }
-
-    public void setStop(Double stop) {
-        this.stop = stop;
-    }
-
-    public void setStop(String stop) {
-        if (stop == null || stop.equals("")) {
-            this.stop = null;
-        } else {
-            this.stop = Double.parseDouble(stop);
         }
     }
 

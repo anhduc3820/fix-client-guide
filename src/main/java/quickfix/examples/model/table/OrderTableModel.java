@@ -17,7 +17,9 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai;
+package quickfix.examples.model.table;
+
+import quickfix.examples.model.Order;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.HashMap;
@@ -31,9 +33,8 @@ public class OrderTableModel extends AbstractTableModel {
     private final static int SIDE = 4;
     private final static int TYPE = 5;
     private final static int LIMITPRICE = 6;
-    private final static int STOPPRICE = 7;
-    private final static int AVGPX = 8;
-    private final static int TARGET = 9;
+    private final static int AVGPX = 7;
+    private final static int TARGET = 8;
 
     private final HashMap<Integer, Order> rowToOrder;
     private final HashMap<String, Integer> idToRow;
@@ -48,7 +49,7 @@ public class OrderTableModel extends AbstractTableModel {
 
         headers = new String[]
                   {"Symbol", "Quantity", "Open", "Executed",
-                   "Side", "Type", "Limit", "Stop", "AvgPx",
+                   "Side", "Type", "Limit", "AvgPx",
                    "Target"};
     }
 
@@ -141,8 +142,6 @@ public class OrderTableModel extends AbstractTableModel {
             return order.getType();
         case LIMITPRICE:
             return order.getLimit();
-        case STOPPRICE:
-            return order.getStop();
         case AVGPX:
             return order.getAvgPx();
         case TARGET:

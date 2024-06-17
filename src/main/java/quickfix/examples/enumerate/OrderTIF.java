@@ -17,24 +17,22 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai;
+package quickfix.examples.enumerate;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class OrderType {
-    static private final Map<String, OrderType> known = new HashMap<>();
-    static public final OrderType MARKET = new OrderType("Market");
-    static public final OrderType LIMIT = new OrderType("Limit");
-    static public final OrderType STOP = new OrderType("Stop");
-    static public final OrderType STOP_LIMIT = new OrderType("Stop Limit");
+public class OrderTIF {
+    static private final Map<String, OrderTIF> known = new HashMap<>();
+    static public final OrderTIF DAY = new OrderTIF("Day");
+
+    static private final OrderTIF[] array = { DAY };
+
     private final String name;
 
-    static private final OrderType[] array = { MARKET, LIMIT, STOP, STOP_LIMIT };
-
-    private OrderType(String name) {
+    private OrderTIF(String name) {
         this.name = name;
-        synchronized (OrderType.class) {
+        synchronized (OrderTIF.class) {
             known.put(name, this);
         }
     }
@@ -51,11 +49,11 @@ public class OrderType {
         return array;
     }
 
-    public static OrderType parse(String type) throws IllegalArgumentException {
-        OrderType result = known.get(type);
+    public static OrderTIF parse(String type) throws IllegalArgumentException {
+        OrderTIF result = known.get(type);
         if (result == null) {
             throw new IllegalArgumentException
-            ("OrderType: " + type + " is unknown.");
+            ("OrderTIF: " + type + " is unknown.");
         }
         return result;
     }

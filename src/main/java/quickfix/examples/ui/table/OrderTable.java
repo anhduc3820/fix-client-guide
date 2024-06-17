@@ -17,11 +17,12 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai.ui;
+package quickfix.examples.ui.table;
 
-import quickfix.examples.banzai.BanzaiApplication;
-import quickfix.examples.banzai.Order;
-import quickfix.examples.banzai.OrderTableModel;
+import quickfix.examples.app.ApplicationRunner;
+import quickfix.examples.model.Order;
+import quickfix.examples.model.table.OrderTableModel;
+import quickfix.examples.service.RoutingService;
 
 import javax.swing.table.*;
 import javax.swing.*;
@@ -29,11 +30,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class OrderTable extends JTable implements MouseListener {
-    private final transient BanzaiApplication application;
+    private final RoutingService routingService;
 
-    public OrderTable(OrderTableModel orderTableModel, BanzaiApplication application) {
+    public OrderTable(OrderTableModel orderTableModel, RoutingService routingService) {
         super(orderTableModel);
-        this.application = application;
+        this.routingService = routingService;
         addMouseListener(this);
     }
 
@@ -67,7 +68,7 @@ public class OrderTable extends JTable implements MouseListener {
             return;
         int row = rowAtPoint(e.getPoint());
         Order order = ((OrderTableModel) dataModel).getOrder(row);
-        application.cancel(order);
+        routingService.cancel(order);
     }
 
     public void mouseEntered(MouseEvent e) {}

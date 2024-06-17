@@ -17,66 +17,61 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.examples.banzai.ui;
+package quickfix.examples.ui.frame;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import quickfix.examples.banzai.Banzai;
-import quickfix.examples.banzai.BanzaiApplication;
-import quickfix.examples.banzai.ExecutionTableModel;
-import quickfix.examples.banzai.OrderTableModel;
+import quickfix.examples.app.ApplicationRunner;
+import quickfix.examples.Main;
+import quickfix.examples.model.ObservableOrder;
+import quickfix.examples.model.table.ExecutionTableModel;
+import quickfix.examples.model.table.OrderTableModel;
+import quickfix.examples.service.RoutingService;
+import quickfix.examples.ui.panel.AppPanel;
 
 /**
  * Main application window
  */
-public class BanzaiFrame extends JFrame {
+public class AppFrame extends JFrame {
 
-    public BanzaiFrame(OrderTableModel orderTableModel, ExecutionTableModel executionTableModel,
-            final BanzaiApplication application) {
+    public AppFrame(OrderTableModel orderTableModel,
+                    ExecutionTableModel executionTableModel,
+                    final ApplicationRunner applicationRunner,
+                    ObservableOrder observableOrder,
+                    RoutingService routingService) {
         super();
-        setTitle("Banzai!");
+        setTitle("Fix client guide !");
         setSize(600, 400);
 
         if (System.getProperties().containsKey("openfix")) {
-            createMenuBar(application);
+            createMenuBar();
         }
-        getContentPane().add(new BanzaiPanel(orderTableModel, executionTableModel, application),
+        getContentPane().add(new AppPanel(orderTableModel, executionTableModel, applicationRunner, observableOrder, routingService),
                 BorderLayout.CENTER);
         setVisible(true);
     }
 
-    private void createMenuBar(final BanzaiApplication application) {
+    private void createMenuBar() {
         JMenuBar menubar = new JMenuBar();
 
         JMenu sessionMenu = new JMenu("Session");
         menubar.add(sessionMenu);
 
         JMenuItem logonItem = new JMenuItem("Logon");
-        logonItem.addActionListener(e -> Banzai.get().logon());
+        logonItem.addActionListener(e -> Main.get().logon());
         sessionMenu.add(logonItem);
 
         JMenuItem logoffItem = new JMenuItem("Logoff");
-        logoffItem.addActionListener(e -> Banzai.get().logout());
+        logoffItem.addActionListener(e -> Main.get().logout());
         sessionMenu.add(logoffItem);
 
         JMenu appMenu = new JMenu("Application");
         menubar.add(appMenu);
-
-        JMenuItem appAvailableItem = new JCheckBoxMenuItem("Available");
-        appAvailableItem.setSelected(application.isAvailable());
-        appAvailableItem.addActionListener(e -> application.setAvailable(((JCheckBoxMenuItem) e.getSource()).isSelected()));
-        appMenu.add(appAvailableItem);
-
-        JMenuItem sendMissingFieldRejectItem = new JCheckBoxMenuItem("Send Missing Field Reject");
-        sendMissingFieldRejectItem.setSelected(application.isMissingField());
-        sendMissingFieldRejectItem.addActionListener(e -> application.setMissingField(((JCheckBoxMenuItem) e.getSource()).isSelected()));
-        appMenu.add(sendMissingFieldRejectItem);
 
         setJMenuBar(menubar);
     }
