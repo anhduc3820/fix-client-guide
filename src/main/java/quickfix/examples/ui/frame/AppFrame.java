@@ -30,6 +30,7 @@ import quickfix.examples.app.ApplicationRunner;
 import quickfix.examples.Main;
 import quickfix.examples.model.ObservableOrder;
 import quickfix.examples.model.table.ExecutionTableModel;
+import quickfix.examples.model.table.OrderBookTableModel;
 import quickfix.examples.model.table.OrderTableModel;
 import quickfix.examples.service.RoutingService;
 import quickfix.examples.ui.panel.AppPanel;
@@ -40,19 +41,28 @@ import quickfix.examples.ui.panel.AppPanel;
 public class AppFrame extends JFrame {
 
     public AppFrame(OrderTableModel orderTableModel,
+                    OrderBookTableModel orderBookTableModel,
                     ExecutionTableModel executionTableModel,
                     final ApplicationRunner applicationRunner,
                     ObservableOrder observableOrder,
                     RoutingService routingService) {
         super();
         setTitle("Fix client guide !");
-        setSize(600, 400);
+        setSize(1200, 800);
 
         if (System.getProperties().containsKey("openfix")) {
             createMenuBar();
         }
-        getContentPane().add(new AppPanel(orderTableModel, executionTableModel, applicationRunner, observableOrder, routingService),
-                BorderLayout.CENTER);
+        getContentPane().add(
+                new AppPanel(
+                        orderTableModel,
+                        orderBookTableModel,
+                        executionTableModel,
+                        applicationRunner,
+                        observableOrder,
+                        routingService),
+                BorderLayout.CENTER
+        );
         setVisible(true);
     }
 

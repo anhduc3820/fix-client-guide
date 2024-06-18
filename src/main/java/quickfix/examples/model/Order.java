@@ -20,9 +20,13 @@
 package quickfix.examples.model;
 
 import quickfix.examples.enumerate.OrderSide;
+import quickfix.examples.enumerate.OrderStatus;
 import quickfix.examples.enumerate.OrderTIF;
 import quickfix.examples.enumerate.OrderType;
 import quickfix.SessionID;
+import quickfix.field.OrdStatus;
+
+import java.math.BigDecimal;
 
 public class Order implements Cloneable {
     private SessionID sessionID = null;
@@ -33,8 +37,9 @@ public class Order implements Cloneable {
     private OrderSide side = OrderSide.BUY;
     private OrderType type = OrderType.LIMIT;
     private OrderTIF tif = OrderTIF.DAY;
-    private Double limit = null;
-    private double avgPx = 0.0;
+    private OrderStatus status = OrderStatus.PENDING_NEW;
+    private BigDecimal limit = BigDecimal.ZERO;
+    private BigDecimal avgPx = BigDecimal.ZERO;
     private boolean rejected = false;
     private boolean canceled = false;
     private boolean isNew = true;
@@ -57,7 +62,7 @@ public class Order implements Cloneable {
             order.setOriginalID(getID());
             order.setID(order.generateID());
             return order;
-        } catch (CloneNotSupportedException e) {}
+        } catch (CloneNotSupportedException ignored) {}
         return null;
     }
 
@@ -127,11 +132,11 @@ public class Order implements Cloneable {
         this.tif = tif;
     }
 
-    public Double getLimit() {
+    public BigDecimal getLimit() {
         return limit;
     }
 
-    public void setLimit(Double limit) {
+    public void setLimit(BigDecimal limit) {
         this.limit = limit;
     }
 
@@ -139,15 +144,15 @@ public class Order implements Cloneable {
         if (limit == null || limit.equals("")) {
             this.limit = null;
         } else {
-            this.limit = Double.parseDouble(limit);
+            this.limit = new BigDecimal(limit);
         }
     }
 
-    public void setAvgPx(double avgPx) {
+    public void setAvgPx(BigDecimal avgPx) {
         this.avgPx = avgPx;
     }
 
-    public double getAvgPx() {
+    public BigDecimal getAvgPx() {
         return avgPx;
     }
 
@@ -197,5 +202,13 @@ public class Order implements Cloneable {
 
     public String getOriginalID() {
         return originalID;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 }

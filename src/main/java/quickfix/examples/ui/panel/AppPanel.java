@@ -38,6 +38,7 @@ import quickfix.examples.app.ApplicationRunner;
 import quickfix.examples.model.ObservableOrder;
 import quickfix.examples.model.table.ExecutionTableModel;
 import quickfix.examples.model.Order;
+import quickfix.examples.model.table.OrderBookTableModel;
 import quickfix.examples.model.table.OrderTableModel;
 import quickfix.examples.service.RoutingService;
 
@@ -48,16 +49,21 @@ public class AppPanel extends JPanel implements Observer, ActionListener {
 
     private final OrderEntryPanel orderEntryPanel;
     private final OrderPanel orderPanel;
+    private final ExecutionPanel executionPanel;
+    private final OrderBookPanel orderBookPanel;
     private final CancelReplacePanel cancelReplacePanel;
+    private final OrderBookTableModel orderBookTableModel;
     private final OrderTableModel orderTableModel;
 
     public AppPanel(OrderTableModel orderTableModel,
+                    OrderBookTableModel orderBookTableModel,
                     ExecutionTableModel executionTableModel,
                     ApplicationRunner applicationRunner,
                     ObservableOrder observableOrder,
                     RoutingService routingService) {
         setName("AppPanel");
         this.orderTableModel = orderTableModel;
+        this.orderBookTableModel = orderBookTableModel;
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setLayout(new GridBagLayout());
@@ -72,9 +78,14 @@ public class AppPanel extends JPanel implements Observer, ActionListener {
         constraints.gridx++;
         constraints.weighty = 10;
 
+        JTabbedPane orderBookPane = new JTabbedPane();
+        orderBookPanel = new OrderBookPanel(orderBookTableModel);
+        orderBookPane.add("Order books", orderBookPanel);
+        add(orderBookPane, constraints);
+
         JTabbedPane tabbedPane = new JTabbedPane();
         orderPanel = new OrderPanel(orderTableModel, routingService);
-        ExecutionPanel executionPanel = new ExecutionPanel(executionTableModel);
+        executionPanel = new ExecutionPanel(executionTableModel);
 
         tabbedPane.add("Orders", orderPanel);
         tabbedPane.add("Executions", executionPanel);

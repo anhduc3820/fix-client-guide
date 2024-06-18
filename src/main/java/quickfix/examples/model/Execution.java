@@ -21,13 +21,15 @@ package quickfix.examples.model;
 
 import quickfix.examples.enumerate.OrderSide;
 
+import java.math.BigDecimal;
+
 public class Execution {
     private String symbol = null;
     private String account = null;
     private long order;
     private int quantity = 0;
     private OrderSide side = OrderSide.BUY;
-    private double price;
+    private BigDecimal price;
     private String ID = null;
     private String exchangeID = null;
     private String status = null;
@@ -65,11 +67,11 @@ public class Execution {
         this.side = side;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

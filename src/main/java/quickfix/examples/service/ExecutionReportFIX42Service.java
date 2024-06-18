@@ -1,5 +1,6 @@
 package quickfix.examples.service;
 
+import quickfix.examples.enumerate.OrderStatus;
 import quickfix.examples.model.Execution;
 import quickfix.examples.model.ObservableOrder;
 import quickfix.examples.model.Order;
@@ -9,8 +10,6 @@ import quickfix.examples.utils.LogUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import quickfix.FieldNotFound;
-import quickfix.Message;
 import quickfix.SessionID;
 import quickfix.field.*;
 import quickfix.fix42.OrderCancelReject;
@@ -70,6 +69,7 @@ public class ExecutionReportFIX42Service {
         }
 
         order.setNew(true);
+        order.setStatus(OrderStatus.NEW);
         order.setMessage(executionReport.isSetText() ? executionReport.getText().getValue() : "");
 
         orderTableModel.updateOrder(order, executionReport.getClOrdID().getValue());
@@ -89,8 +89,9 @@ public class ExecutionReportFIX42Service {
         BigDecimal fillSize = new BigDecimal("" + executionReport.getLastShares().getValue());
         order.setOpen(order.getOpen() - (int) Double.parseDouble(fillSize.toPlainString()));
         order.setExecuted(Double.parseDouble(executionReport.getString(CumQty.FIELD)));
-        order.setAvgPx(Double.parseDouble(executionReport.getString(AvgPx.FIELD)));
+        order.setAvgPx(new BigDecimal(executionReport.getString(AvgPx.FIELD)));
         order.setMessage(executionReport.isSetText() ? executionReport.getText().getValue() : "");
+        order.setStatus(OrderStatus.PARTIALLY_FILLED);
 
         orderTableModel.updateOrder(order, executionReport.getClOrdID().getValue());
         observableOrder.update(order);
@@ -100,12 +101,12 @@ public class ExecutionReportFIX42Service {
 
         execution.setSymbol(executionReport.getSymbol().getValue());
         execution.setQuantity(fillSize.intValue());
-        if (executionReport.isSetLastPx()) execution.setPrice(executionReport.getLastPx().getValue());
+        if (executionReport.isSetLastPx()) execution.setPrice(new BigDecimal(executionReport.getLastPx().getValue()));
         Side side = executionReport.getSide();
         execution.setSide(FIXSideToSide(side));
         execution.setAccount(executionReport.getAccount().getValue());
         execution.setOrder(Long.parseLong(executionReport.getClOrdID().getValue()));
-        execution.setStatus(String.valueOf(OrdStatus.PARTIALLY_FILLED));
+        execution.setStatus(OrderStatus.parse(OrdStatus.PARTIALLY_FILLED));
         executionTableModel.addExecution(execution);
         log.info("finish handlePartialFillOrderNotice !");
     }
@@ -121,8 +122,9 @@ public class ExecutionReportFIX42Service {
 
         order.setOpen(0);
         order.setExecuted(executionReport.getLastShares().getValue());
-        order.setAvgPx(executionReport.getAvgPx().getValue());
+        order.setAvgPx(new BigDecimal(executionReport.getAvgPx().getValue()));
         order.setMessage(executionReport.isSetText() ? executionReport.getText().getValue() : "");
+        order.setStatus(OrderStatus.FILLED);
 
         orderTableModel.updateOrder(order, executionReport.getClOrdID().getValue());
         observableOrder.update(order);
@@ -132,12 +134,12 @@ public class ExecutionReportFIX42Service {
 
         execution.setSymbol(executionReport.getSymbol().getValue());
         execution.setQuantity((int) executionReport.getLastShares().getValue());
-        if (executionReport.isSetLastPx()) execution.setPrice(executionReport.getLastPx().getValue());
+        if (executionReport.isSetLastPx()) execution.setPrice(new BigDecimal(executionReport.getLastPx().getValue()));
         Side side = executionReport.getSide();
         execution.setSide(FIXSideToSide(side));
         execution.setAccount(executionReport.getAccount().getValue());
         execution.setOrder(Long.parseLong(executionReport.getClOrdID().getValue()));
-        execution.setStatus(String.valueOf(OrdStatus.FILLED));
+        execution.setStatus(OrderStatus.parse(OrdStatus.FILLED));
         executionTableModel.addExecution(execution);
         log.info("finish handleFillOrderNotice !");
     }
@@ -163,12 +165,13 @@ public class ExecutionReportFIX42Service {
         if (fillSize.compareTo(BigDecimal.ZERO) > 0) {
             order.setOpen(order.getOpen() - (int) Double.parseDouble(fillSize.toPlainString()));
             order.setExecuted(Double.parseDouble(executionReport.getString(CumQty.FIELD)));
-            order.setAvgPx(Double.parseDouble(executionReport.getString(AvgPx.FIELD)));
+            order.setAvgPx(new BigDecimal(executionReport.getString(AvgPx.FIELD)));
         }
 
         order.setCanceled(true);
         order.setOpen(0);
         order.setMessage(executionReport.isSetText() ? executionReport.getText().getValue() : "");
+        order.setStatus(OrderStatus.CANCELED);
 
         orderTableModel.updateOrder(order, executionReport.getClOrdID().getValue());
         observableOrder.update(order);

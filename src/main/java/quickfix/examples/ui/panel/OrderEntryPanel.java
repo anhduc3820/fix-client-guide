@@ -32,6 +32,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -48,6 +49,7 @@ import quickfix.examples.model.LogonEvent;
 import quickfix.examples.model.Order;
 import quickfix.examples.model.table.OrderTableModel;
 import quickfix.examples.service.RoutingService;
+import quickfix.examples.utils.CSVUtils;
 import quickfix.examples.utils.DoubleNumberTextField;
 import quickfix.examples.utils.IntegerNumberTextField;
 import quickfix.SessionID;
@@ -55,12 +57,11 @@ import quickfix.examples.app.ApplicationRunner;
 
 @SuppressWarnings("unchecked")
 public class OrderEntryPanel extends JPanel implements Observer {
-    private boolean symbolEntered = false;
     private boolean quantityEntered = false;
     private boolean limitEntered = false;
     private boolean sessionEntered = false;
 
-    private final JTextField symbolTextField = new JTextField();
+    private final JComboBox symbolComBox = new JComboBox(CSVUtils.symbols);
     private final IntegerNumberTextField quantityTextField = new IntegerNumberTextField();
 
     private final JComboBox sideComboBox = new JComboBox(OrderSide.toArray());
@@ -94,7 +95,7 @@ public class OrderEntryPanel extends JPanel implements Observer {
         applicationRunner.addLogonObserver(this);
 
         SubmitActivator activator = new SubmitActivator();
-        symbolTextField.addKeyListener(activator);
+        symbolComBox.addKeyListener(activator);
         quantityTextField.addKeyListener(activator);
         limitPriceTextField.addKeyListener(activator);
         stopPriceTextField.addKeyListener(activator);
@@ -130,31 +131,40 @@ public class OrderEntryPanel extends JPanel implements Observer {
         add(new JLabel("Quantity"), ++x, y);
         add(new JLabel("Side"), ++x, y);
         add(new JLabel("Type"), ++x, y);
+
         constraints.ipadx = 30;
         add(limitPriceLabel, ++x, y);
         constraints.ipadx = 0;
+
         add(new JLabel("TIF"), ++x, y);
         constraints.ipadx = 30;
 
-        symbolTextField.setName("SymbolTextField");
-        add(symbolTextField, x = 0, ++y);
+        symbolComBox.setName("symbolComBox");
+        add(symbolComBox, x = 0, ++y);
         constraints.ipadx = 0;
+
         quantityTextField.setName("QuantityTextField");
         add(quantityTextField, ++x, y);
+
         sideComboBox.setName("SideComboBox");
         add(sideComboBox, ++x, y);
+
         typeComboBox.setName("TypeComboBox");
         add(typeComboBox, ++x, y);
+
         limitPriceTextField.setName("LimitPriceTextField");
         add(limitPriceTextField, ++x, y);
+
         tifComboBox.setName("TifComboBox");
         add(tifComboBox, ++x, y);
 
         constraints.insets = new Insets(3, 0, 0, 0);
         constraints.gridwidth = GridBagConstraints.RELATIVE;
+
         sessionComboBox.setName("SessionComboBox");
         add(sessionComboBox, 0, ++y);
         constraints.gridwidth = GridBagConstraints.REMAINDER;
+
         submitButton.setName("SubmitButton");
         add(submitButton, x, y);
         constraints.gridwidth = 0;
@@ -180,7 +190,7 @@ public class OrderEntryPanel extends JPanel implements Observer {
 
     private void activateSubmit() {
         OrderType type = (OrderType) typeComboBox.getSelectedItem();
-        boolean activate = symbolEntered && quantityEntered && sessionEntered;
+        boolean activate = quantityEntered && sessionEntered;
 
         if (type == OrderType.LIMIT)
             submitButton.setEnabled(activate && limitEntered);
@@ -218,8 +228,7 @@ public class OrderEntryPanel extends JPanel implements Observer {
             order.setSide((OrderSide) sideComboBox.getSelectedItem());
             order.setType((OrderType) typeComboBox.getSelectedItem());
             order.setTIF((OrderTIF) tifComboBox.getSelectedItem());
-
-            order.setSymbol(symbolTextField.getText());
+            order.setSymbol(symbolComBox.getSelectedItem().toString());
             order.setQuantity(Integer.parseInt(quantityTextField.getText()));
             order.setOpen(order.getQuantity());
 
@@ -236,9 +245,7 @@ public class OrderEntryPanel extends JPanel implements Observer {
     private class SubmitActivator implements KeyListener, ItemListener {
         public void keyReleased(KeyEvent e) {
             Object obj = e.getSource();
-            if (obj == symbolTextField) {
-                symbolEntered = testField(obj);
-            } else if (obj == quantityTextField) {
+            if (obj == quantityTextField) {
                 quantityEntered = testField(obj);
             } else if (obj == limitPriceTextField) {
                 limitEntered = testField(obj);

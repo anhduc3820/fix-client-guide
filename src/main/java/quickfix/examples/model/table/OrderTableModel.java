@@ -26,15 +26,17 @@ import java.util.HashMap;
 
 public class OrderTableModel extends AbstractTableModel {
 
-    private final static int SYMBOL = 0;
-    private final static int QUANTITY = 1;
-    private final static int OPEN = 2;
-    private final static int EXECUTED = 3;
-    private final static int SIDE = 4;
-    private final static int TYPE = 5;
-    private final static int LIMITPRICE = 6;
-    private final static int AVGPX = 7;
-    private final static int TARGET = 8;
+    private final static int ORDER = 0;
+    private final static int SYMBOL = 1;
+    private final static int QUANTITY = 2;
+    private final static int OPEN = 3;
+    private final static int EXECUTED = 4;
+    private final static int SIDE = 5;
+    private final static int TYPE = 6;
+    private final static int LIMITPRICE = 7;
+    private final static int AVGPX = 8;
+    private final static int STATUS = 9;
+    private final static int TARGET = 10;
 
     private final HashMap<Integer, Order> rowToOrder;
     private final HashMap<String, Integer> idToRow;
@@ -48,8 +50,8 @@ public class OrderTableModel extends AbstractTableModel {
         idToOrder = new HashMap<>();
 
         headers = new String[]
-                  {"Symbol", "Quantity", "Open", "Executed",
-                   "Side", "Type", "Limit", "AvgPx",
+                  {"Order", "Symbol", "Quantity", "Open", "Executed",
+                   "Side", "Type", "Limit", "AvgPx", "Status",
                    "Target"};
     }
 
@@ -128,6 +130,8 @@ public class OrderTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         Order order = rowToOrder.get(rowIndex);
         switch (columnIndex) {
+        case ORDER:
+            return order.getID();
         case SYMBOL:
             return order.getSymbol();
         case QUANTITY:
@@ -144,6 +148,8 @@ public class OrderTableModel extends AbstractTableModel {
             return order.getLimit();
         case AVGPX:
             return order.getAvgPx();
+        case STATUS:
+            return order.getStatus().getStatus();
         case TARGET:
             return order.getSessionID().getTargetCompID();
         }

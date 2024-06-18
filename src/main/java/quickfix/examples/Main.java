@@ -1,22 +1,22 @@
 package quickfix.examples;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
-
+import java.util.stream.Collectors;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
-
 import quickfix.examples.app.ApplicationRunner;
 import quickfix.examples.model.ObservableOrder;
 import quickfix.examples.model.table.ExecutionTableModel;
+import quickfix.examples.model.table.OrderBookTableModel;
 import quickfix.examples.model.table.OrderTableModel;
 import quickfix.examples.service.ExecutionReportFIX42Service;
 import quickfix.examples.service.ExecutionReportFIX44Service;
 import quickfix.examples.service.RoutingService;
 import lombok.extern.slf4j.Slf4j;
 import org.quickfixj.jmx.JmxExporter;
-
 import quickfix.DefaultMessageFactory;
 import quickfix.FileStoreFactory;
 import quickfix.Initiator;
@@ -29,6 +29,7 @@ import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.SocketInitiator;
 import quickfix.examples.ui.frame.AppFrame;
+import quickfix.examples.utils.CSVUtils;
 
 /**
  * Entry point for the Banzai application.
@@ -40,24 +41,36 @@ public class Main {
     private boolean initiatorStarted = false;
     private Initiator initiator = null;
 
+    public void loadSymbols() {
+        CSVUtils.symbols = CSVUtils
+                .importSymbolCSV("D:\\progaram-language\\java\\fix-client-guide\\src\\main\\resources\\quickfix\\examples\\symbols.csv")
+                .stream().map(CSVUtils.Symbol::getSymbolCode).toArray();
+
+        CSVUtils.symbolList = CSVUtils
+                .importSymbolCSV("D:\\progaram-language\\java\\fix-client-guide\\src\\main\\resources\\quickfix\\examples\\symbols.csv")
+                .stream().map(CSVUtils.Symbol::getSymbolCode).collect(Collectors.toList());
+    }
+
     public Main(String[] args) throws Exception {
 
         InputStream inputStream = null;
         if (args.length == 0) {
             inputStream = Main.class.getResourceAsStream("config.cfg");
         } else if (args.length == 1) {
-            inputStream = new FileInputStream(args[0]);
+            inputStream = Files.newInputStream(Paths.get(args[0]));
         }
 
         if (inputStream == null) {
-            System.out.println("usage: " + Main.class.getName() + " [configFile].");
+            log.warn("usage: " + Main.class.getName() + " [configFile].");
             return;
         }
 
+        loadSymbols();
         SessionSettings settings = new SessionSettings(inputStream);
         inputStream.close();
 
         OrderTableModel orderTableModel = new OrderTableModel();
+        OrderBookTableModel orderBookTableModel = new OrderBookTableModel();
         ExecutionTableModel executionTableModel = new ExecutionTableModel();
         ObservableOrder observableOrder = new ObservableOrder();
         ExecutionReportFIX42Service executionReportFIX42Service = new ExecutionReportFIX42Service(observableOrder, executionTableModel, orderTableModel);
@@ -78,7 +91,14 @@ public class Main {
         JmxExporter exporter = new JmxExporter();
         exporter.register(initiator);
 
-        JFrame frame = new AppFrame(orderTableModel, executionTableModel, applicationRunner, observableOrder, routingService);
+        JFrame frame = new AppFrame(
+                orderTableModel,
+                orderBookTableModel,
+                executionTableModel,
+                applicationRunner,
+                observableOrder,
+                routingService
+        );
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 

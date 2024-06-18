@@ -215,7 +215,7 @@ public class RoutingService {
     public Message populateOrder(Order order, Message newOrderSingle) {
         OrderType type = order.getType();
         if (type == OrderType.LIMIT)
-            newOrderSingle.setField(new Price(order.getLimit()));
+            newOrderSingle.setField(new Price(order.getLimit().doubleValue()));
 
         newOrderSingle.setField(tifToFIXTif(order.getTIF()));
 

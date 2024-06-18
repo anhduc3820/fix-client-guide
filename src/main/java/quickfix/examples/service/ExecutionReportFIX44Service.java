@@ -135,7 +135,7 @@ public class ExecutionReportFIX44Service {
         if (fillSize.compareTo(BigDecimal.ZERO) > 0) {
             order.setOpen(order.getOpen() - (int) Double.parseDouble(fillSize.toPlainString()));
             order.setExecuted(Double.parseDouble(message.getString(CumQty.FIELD)));
-            order.setAvgPx(Double.parseDouble(message.getString(AvgPx.FIELD)));
+            order.setAvgPx(new BigDecimal(message.getString(AvgPx.FIELD)));
         }
 
         OrdStatus ordStatus = (OrdStatus) message.getField(new OrdStatus());
@@ -168,7 +168,7 @@ public class ExecutionReportFIX44Service {
             execution.setSymbol(message.getField(new Symbol()).getValue());
             execution.setQuantity(fillSize.intValue());
             if (message.isSetField(LastPx.FIELD)) {
-                execution.setPrice(Double.parseDouble(message.getString(LastPx.FIELD)));
+                execution.setPrice(new BigDecimal(message.getString(LastPx.FIELD)));
             }
             Side side = (Side) message.getField(new Side());
             execution.setSide(FIXSideToSide(side));
